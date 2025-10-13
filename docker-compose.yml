@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: ./server
+    volumes:
+      - db_data_sqlite:/var/lib/kutt
+    env_file:
+      - ./server/.kutt.env
+    environment:
+      - DB_CLIENT=better-sqlite3
+      - DB_FILENAME=/var/lib/kutt/data.sqlite
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - redis
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - server
+    restart: always
+
+  redis:
+    image: redis:alpine
+    restart: always
+    expose:
+      - 6379
+
+volumes:
+  db_data_sqlite:
