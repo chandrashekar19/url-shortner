@@ -17,27 +17,6 @@ It supports custom domains, secure authentication, and link management — all t
 - 🔒 JWT-based authentication  
 
 ---
-
-## 🏗️ Project Structure
-
-project-root/
-├── client/ # React + Vite frontend
-│ ├── src/
-│ ├── vite.config.ts
-│ └── .env
-├── server/ # Node.js backend (Express)
-│ ├── .kutt.env
-│ ├── knexfile.js
-│ ├── routes/
-│ └── server.js
-├── docker-compose.yml # Docker setup
-└── README.md
-
-makefile
-Copy code
-
----
-
 ## ⚙️ Environment Setup
 
 ### 🔸 Backend (`server/.kutt.env`)
@@ -142,11 +121,6 @@ Deployment	Docker Compose
 Built and customized by Chandrashekar Kalal
 Based on the open-source Kutt project.
 
-
-yaml
-Copy code
-
----
 
 ###  Instructions
 
