@@ -3,24 +3,26 @@ const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const { Strategy: LocalStrategy } = require("passport-local");
 const passport = require("passport");
 const bcrypt = require("bcryptjs");
-
-const query = require("./queries");
+const { db } = require("./db/drizzle");
+const { users } = require("./modules/users/users.schema");
+const { eq } = require("drizzle-orm");
 const env = require("./env");
 
 const jwtOptions = {
-  jwtFromRequest: req => req.cookies?.token,
-  secretOrKey: env.JWT_SECRET
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    (req) => req.cookies?.token,
+    ExtractJwt.fromAuthHeaderAsBearerToken(),
+  ]),
+  secretOrKey: env.JWT_SECRET,
 };
 
 passport.use(
   new JwtStrategy(jwtOptions, async (payload, done) => {
     try {
-      // 'sub' used to be the email address
-      // this check makes sure to invalidate old JWTs where the sub is still the email address
       if (typeof payload.sub === "string" || !payload.sub) {
         return done(null, false);
       }
-      const user = await query.user.find({ id: payload.sub });
+      const [user] = await db.select().from(users).where(eq(users.id, payload.sub));
       if (!user) return done(null, false);
       return done(null, user, payload);
     } catch (err) {
@@ -36,7 +38,7 @@ const localOptions = {
 passport.use(
   new LocalStrategy(localOptions, async (email, password, done) => {
     try {
-      const user = await query.user.find({ email });
+      const [user] = await db.select().from(users).where(eq(users.email, email));
       if (!user) {
         return done(null, false);
       }
@@ -59,7 +61,7 @@ const localAPIKeyOptions = {
 passport.use(
   new LocalAPIKeyStrategy(localAPIKeyOptions, async (apikey, done) => {
     try {
-      const user = await query.user.find({ apikey });
+      const [user] = await db.select().from(users).where(eq(users.apikey, apikey));
       if (!user) {
         return done(null, false);
       }

@@ -24,9 +24,12 @@ dist-ssr
 *.sw?
 
 
-# Environment files
+# Environment files (exclude .example files)
 .env
-.env.*
+.env.local
+.env.development
+.env.production
+!.env.example
 
 .kutt.env
 .kutt.env*

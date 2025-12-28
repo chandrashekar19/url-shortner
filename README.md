@@ -1,162 +1,74 @@
-# 🚀 URL Shortener (Kutt-Based Custom Setup)
+# 🚀 Kutt Core (Minimized & Modernized)
 
-A modern, self-hosted **URL Shortener** built with **Node.js (Express)**, **React + Vite**, and **PostgreSQL / SQLite**.  
-It supports custom domains, secure authentication, and link management — all through a clean web interface.
-
----
-
-## 🧩 Features
-
-- 🔗 Shorten URLs with custom aliases  
-- 👥 User authentication (Signup / Login)  
-- 🧰 Admin dashboard to manage users, domains, and links  
-- 📊 View statistics for each short link  
-- 🌍 Supports PostgreSQL, MySQL, or SQLite  
-- ⚡ Frontend built with React + Vite + TypeScript  
-- 🐳 Docker support for one-command setup  
-- 🔒 JWT-based authentication  
+A streamlined, high-performance **URL Shortener** built with modern **Node.js (Vertical Slice Architecture)**, **React + Vite**, and **Drizzle ORM**. This version is refactored for simplicity, speed, and standard industry practices.
 
 ---
 
-## 🏗️ Project Structure
-
-project-root/
-├── client/ # React + Vite frontend
-│ ├── src/
-│ ├── vite.config.ts
-│ └── .env
-├── server/ # Node.js backend (Express)
-│ ├── .kutt.env
-│ ├── knexfile.js
-│ ├── routes/
-│ └── server.js
-├── docker-compose.yml # Docker setup
-└── README.md
-
-makefile
-Copy code
+## 🏗️ Architecture: Vertical Slice
+Unlike traditional layered architectures, this project uses **Vertical Slicing**. Each feature (Links, Auth, Users) is self-contained in its own module.
+- `server/modules/links`: Routes, Logic, and SQL Schema for link management.
+- `server/modules/auth`: Identity and access management.
+- `server/db`: Modern database connection using **Drizzle ORM**.
 
 ---
 
-## ⚙️ Environment Setup
+## ⚡ Quick Start: One-Command Dev
 
-### 🔸 Backend (`server/.kutt.env`)
-Example:
-```env
-PORT=3000
-SITE_NAME=URL Shortener
-DEFAULT_DOMAIN=localhost:3000
-DB_CLIENT=pg
-DB_HOST=postgres
-DB_PORT=5432
-DB_NAME=kutt
-DB_USER=postgres
-DB_PASSWORD=yourpassword
-JWT_SECRET=supersecurekey
-REDIS_ENABLED=false
-DISALLOW_ANONYMOUS_LINKS=false
-DISALLOW_REGISTRATION=false
-🔸 Frontend (client/.env)
-env
-Copy code
-VITE_API_BASE_URL=http://localhost:3000/api/v2
-🐳 Run with Docker
-You can start the entire setup using Docker Compose.
+You no longer need to manage multiple terminals. Simply run from the root:
 
-bash
-Copy code
-docker compose up
-This will start:
-
-🧠 server → Node.js backend
-
-🗄️ postgres or sqlite (depending on compose file)
-
-🧰 redis (optional caching layer)
-
-Visit the app at 👉 http://localhost:3000
-
-🧠 Development Setup (Manual)
-If you prefer to run manually instead of Docker:
-
-1️⃣ Backend
-bash
-Copy code
-cd server
-npm install
-npm run migrate
-npm run dev
-2️⃣ Frontend
-bash
-Copy code
-cd client
-npm install
-npm run dev
-Frontend runs on http://localhost:5173
-Backend runs on http://localhost:3000
-
-🧾 API Reference
-The backend exposes RESTful APIs under:
-
-bash
-Copy code
-/api/v2
-Example routes:
-
-Method	Endpoint	Description
-POST	/auth/signup	Register a new user
-POST	/auth/login	Login and get token
-POST	/links	Create a short link
-GET	/links	Get all user links
-DELETE	/links/:id	Delete a link
-
-Use the JWT token returned during login in Authorization headers.
-
-🧑‍💻 Development Notes
-Backend environment file must be named .kutt.env (inside server/).
-
-Frontend .env must stay in the client/ root folder.
-
-custom/ folder (optional) can override backend styles or images if needed.
-
-API base URL for frontend is configured via VITE_API_BASE_URL.
-
-Use npm run migrate to initialize or update database tables.
-
-Example URLs
-Component	URL
-Frontend	http://localhost:5173
-Backend	http://localhost:3000/api/v2
-Health Check	http://localhost:3000/health
-
-🧰 Tech Stack
-Layer	Tech
-Frontend	React, TypeScript, Vite, Axios
-Backend	Node.js, Express, Knex.js
-Database	PostgreSQL / SQLite
-Cache	Redis (optional)
-Auth	JWT
-Deployment	Docker Compose
-
-🧑‍🤝‍🧑 Author
-Built and customized by Chandrashekar Kalal
-Based on the open-source Kutt project.
-
-
-yaml
-Copy code
-
----
-
-###  Instructions
-
-1. Create a new file in your project root (same level as `docker-compose.yml`):  
-touch README.md
-
-sql
-Copy code
-2. Paste the entire content above into it.
-3. Commit it to your repository:
 ```bash
-git add README.md
-git commit -m "Add project documentation"
+npm install:all   # Install all dependencies (Root, Client, Server)
+npm run dev       # Start Backend + Frontend + Migrations concurrently
+```
+
+- **Frontend:** [http://localhost:5173](http://localhost:5173)
+- **Backend:** [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🛠️ Tech Stack
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS |
+| **Backend** | Node.js, Express (Modular) |
+| **Database** | SQLite (Better-SQLite3) + Drizzle ORM |
+| **Validation** | Zod (Type-safe schemas) |
+| **Security** | Passport.js, JWT, Helmet |
+
+---
+
+## ⚙️ Environment Configuration
+
+### Root `.env`
+```env
+JWT_SECRET=your_secure_secret_key
+PORT=3000
+DB_FILENAME=db/data.sqlite
+CLIENT_URL=http://localhost:5173
+```
+
+---
+
+## 📁 Project Structure
+```text
+project-root/
+├── client/          # Vite + React (TypeScript)
+├── server/          # Node.js Modular Backend
+│   ├── modules/     # Vertical Slices (Links, Auth, Users)
+│   ├── db/          # Drizzle ORM Config
+│   └── server.js    # Super-lean Bootstrapper
+├── db/              # Persistent SQLite storage
+├── deployment.md    # Production deployment guide
+└── flow.md          # Technical data-flow documentation
+```
+
+---
+
+## 🚀 Deployment
+For production deployment instructions, including Docker and Nginx configuration, refer to [**deployment.md**](./deployment.md).
+
+---
+
+## 🧑‍💻 Author
+**Chandrashekar Kalal**
+*Refactored for Senior-Level Architectural Standards.*

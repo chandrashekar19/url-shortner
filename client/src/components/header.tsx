@@ -1,5 +1,5 @@
 
-import { useAuth } from "@/hooks/auth-proivder";
+import { useAuth } from "@/hooks/use-auth";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {

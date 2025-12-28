@@ -1,13 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Kutt - Modern URL Shortener</title>
+    <meta name="description" content="Kutt is a modern, secure, and open-source URL shortener. Create short links, track analytics, and manage your links with ease." />
+    <meta name="keywords" content="url shortener, short links, link analytics, link management" />
+    <meta name="author" content="Kutt" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Kutt - Modern URL Shortener" />
+    <meta property="og:description" content="Create short links, track analytics, and manage your links with ease." />
+    <meta property="og:url" content="https://kutt.it" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kutt - Modern URL Shortener" />
+    <meta name="twitter:description" content="Create short links, track analytics, and manage your links with ease." />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#7c3aed" />
+    
+    <!-- Preconnect to API -->
+    <link rel="preconnect" href="http://localhost:3000" />
+    
+    <!-- Security Headers (CSP will be set by server, but we can set referrer) -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    
+    <!-- Prevent Flash of Unstyled Content -->
+    <style>
+      html { visibility: hidden; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Show content once loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        document.documentElement.style.visibility = 'visible';
+      });
+    </script>
+    
+    <!-- Noscript fallback -->
+    <noscript>
+      <style>html { visibility: visible; }</style>
+      <div style="padding: 20px; text-align: center; font-family: system-ui, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>Please enable JavaScript to use Kutt.</p>
+      </div>
+    </noscript>
   </body>
 </html>

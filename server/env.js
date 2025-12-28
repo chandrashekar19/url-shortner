@@ -1,4 +1,4 @@
-require("dotenv").config({ path: ".kutt.env" }); // <-- load your custom env file
+require("dotenv").config(); // <-- load your custom env file
 const { cleanEnv, num, str, bool } = require("envalid");
 const { readFileSync } = require("node:fs");
 
@@ -36,7 +36,7 @@ const spec = {
 
   // 🗄️ Database
   DB_CLIENT: str({ choices: supportedDBClients, default: "better-sqlite3" }),
-  DB_FILENAME: str({ default: "db/data" }),
+  DB_FILENAME: str({ default: "db/data.sqlite" }),
   DB_HOST: str({ default: "localhost" }),
   DB_PORT: num({ default: 5432 }),
   DB_NAME: str({ default: "kutt" }),
@@ -75,7 +75,7 @@ const spec = {
   MAIL_PASSWORD: str({ default: "" }),
 
   // 🚦 Rate limiting
-  ENABLE_RATE_LIMIT: bool({ default: false }),
+  ENABLE_RATE_LIMIT: bool({ default: true }),
 
   // 📬 Communication
   REPORT_EMAIL: str({ default: "" }),

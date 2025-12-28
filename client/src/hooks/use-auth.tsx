@@ -1,22 +1,25 @@
 import { useContext } from "react";
 import { AuthContext } from "./auth-context";
+import type { AuthContextType } from "@/types/auth.types";
 
-interface User {
-  email: string;
-  role?: "USER" | "ADMIN";
-  apikey: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (user: User) => void;
-  logout: () => void;
-}
-
-
-
+/**
+ * Custom hook for accessing authentication context
+ * 
+ * @throws Error if used outside of AuthProvider
+ * @returns AuthContextType with user, login, logout, and loading states
+ * 
+ * @example
+ * const { user, isAuthenticated, login, logout, isLoading } = useAuth();
+ */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+
+  if (context === undefined) {
+    throw new Error(
+      "useAuth must be used within an AuthProvider. " +
+      "Wrap your component tree with <AuthProvider> in App.tsx"
+    );
+  }
+
   return context;
 };
