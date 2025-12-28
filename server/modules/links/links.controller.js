@@ -2,19 +2,32 @@ const { db } = require("../../db/drizzle");
 const { links } = require("./links.schema");
 const { eq, sql } = require("drizzle-orm");
 const { nanoid } = require("nanoid");
-const { CustomError } = require("../../utils");
+
+const env = require("../../env");
 
 /**
- * 🕹️ Links Controller (Senior Architect Pattern)
- * Consolidates all logic for URL shortening.
+ * 🕹️ Links Controller
+ * Helper to format link for frontend
  */
+const formatLink = (link) => ({
+    id: link.uuid,
+    address: link.address,
+    target: link.target,
+    description: link.description || "",
+    link: `http://localhost:3000/${link.address}`,
+    banned: !!link.banned,
+    created_at: link.created_at,
+    updated_at: link.updated_at,
+    visit_count: link.visit_count || 0,
+    password: !!link.password,
+});
 
 // 1. Create a new short link
 exports.createLink = async (req, res) => {
-    const { target, address, description, password, expire_in } = req.body;
+    const { target, customurl, description, password, expire_in } = req.body;
 
     // Auto-generate alias if none provided
-    const alias = address || nanoid(6);
+    const alias = customurl || nanoid(6);
     const uuid = nanoid(10);
 
     const [newLink] = await db.insert(links).values({
@@ -22,25 +35,40 @@ exports.createLink = async (req, res) => {
         address: alias,
         target,
         description,
-        password, // Hash this in a real app
+        password,
         expire_in,
         user_id: req.user?.id || null,
     }).returning();
 
     return res.status(201).json({
         message: "Link shortened successfully",
-        ...newLink,
+        ...formatLink(newLink),
     });
 };
 
 // 2. Get all links for current user
 exports.getUserLinks = async (req, res) => {
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = parseInt(req.query.skip) || 0;
+
     const userLinks = await db.select()
         .from(links)
         .where(eq(links.user_id, req.user.id))
-        .orderBy(sql`${links.created_at} DESC`);
+        .orderBy(sql`${links.created_at} DESC`)
+        .limit(limit)
+        .offset(skip);
 
-    return res.json(userLinks);
+    // Count total links for this user
+    const [{ count }] = await db.select({ count: sql`count(*)` })
+        .from(links)
+        .where(eq(links.user_id, req.user.id));
+
+    return res.json({
+        total: parseInt(count),
+        limit,
+        skip,
+        data: userLinks.map(formatLink),
+    });
 };
 
 // 3. Delete a link
@@ -48,7 +76,7 @@ exports.deleteLink = async (req, res) => {
     const { id } = req.params;
 
     await db.delete(links)
-        .where(eq(links.id, parseInt(id)));
+        .where(eq(links.uuid, id));
 
     return res.json({ message: "Link deleted" });
 };

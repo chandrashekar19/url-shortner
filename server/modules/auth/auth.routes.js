@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const controller = require("./auth.controller");
 const { LoginSchema } = require("../users/users.schema");
-const auth = require("../../handlers/auth.handler");
+const auth = require("../../middleware/auth");
 const asyncHandler = require("../../utils/asyncHandler");
 
 const router = Router();

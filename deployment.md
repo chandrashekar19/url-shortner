@@ -1,119 +1,88 @@
-# Kutt URL Shortener - Deployment Guide
+# 🚀 Kutt URL Shortener - Deployment Guide
 
-This guide provides instructions for deploying Kutt in a production environment.
-
-## 📦 Prerequisites
-- **Node.js:** v20+ 
-- **Database:** PostgreSQL or MySQL (SQLite NOT recommended for High Traffic)
-- **Redis:** Recommended for caching and rate limiting.
-- **Domain:** A domain for your shortener (e.g., `k.it`).
+## Overview
+This app has two parts requiring different hosting:
+- **Frontend (React)** → Vercel, Netlify, or Cloudflare Pages
+- **Backend (Node.js + SQLite)** → Railway, Render, or Fly.io
 
 ---
 
-## 🚀 1. Manual Deployment (Bare Metal / VPS)
+## Option 1: Recommended Stack (Free Tier)
 
-### **Step 1: Clone and Install**
-```bash
-git clone https://github.com/thedevs-network/kutt.git
-cd kutt
-npm install
-cd client && npm install && npm run build
-```
+### Backend → Railway (Free)
+1. Go to [railway.app](https://railway.app)
+2. Connect your GitHub repo
+3. Railway will auto-detect the Node.js app
+4. Add environment variables:
+   ```
+   PORT=3000
+   JWT_SECRET=your-super-secret-key-here
+   DB_FILENAME=db/data.sqlite
+   CLIENT_URL=https://your-frontend.vercel.app
+   ```
+5. Deploy! Railway gives you a URL like: `https://kutt-backend.up.railway.app`
 
-### **Step 2: Configuration**
-Create a `.env` file in the root based on `.env.example`:
-```env
-# Server
-PORT=3000
-SITE_NAME=Kutt
-DEFAULT_DOMAIN=yourdomain.com
-JWT_SECRET=generate-a-long-random-string
-
-# Database (PostgreSQL example)
-DB_CLIENT=pg
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=kutt
-DB_USER=postgres
-DB_PASSWORD=your_password
-
-# Redis (Highly Recommended)
-REDIS_ENABLED=true
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-
-# Permissions
-DISALLOW_REGISTRATION=true
-DISALLOW_ANONYMOUS_LINKS=true
-```
-
-### **Step 3: Run Migrations**
-```bash
-npx knex migrate:latest
-```
-
-### **Step 4: Process Management (PM2)**
-It's recommended to use PM2 to keep the server running:
-```bash
-npm install -g pm2
-pm2 start server/server.js --name kutt-api -- --production
-```
+### Frontend → Vercel (Free)
+1. Go to [vercel.com](https://vercel.com)
+2. Import your repo
+3. Set:
+   - **Root Directory:** `client`
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+4. Add environment variable:
+   ```
+   VITE_API_BASE_URL=https://kutt-backend.up.railway.app/api
+   ```
+5. Deploy!
 
 ---
 
-## 🐳 2. Docker Deployment (Recommended)
+## Option 2: All-in-One on Railway
 
-Kutt provides a `docker-compose.yml` for quick setup.
+Deploy the entire app (frontend + backend) on Railway:
 
-### **Quick Start**
-1. Update `docker-compose.yml` with your environment variables.
-2. Run:
-```bash
-docker-compose up -d
-```
-
-This will spin up:
-- The Kutt API server.
-- The PostgreSQL database.
-- A Redis instance.
-
----
-
-## 🛡️ 3. Security Recommendations
-
-### **Reverse Proxy (Nginx)**
-Always run Kutt behind a reverse proxy like Nginx or Caddy to handle SSL (HTTPS) and static file serving.
-
-**Example Nginx Config:**
-```nginx
-server {
-    listen 80;
-    server_name k.it;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-### **SSL (Let's Encrypt)**
-Use `certbot` to secure your shortener:
-```bash
-sudo certbot --nginx -d yourdomain.com
-```
-
-### **Environment Safety**
-- Ensure `ENABLE_RATE_LIMIT=true` in production.
-- Use a strong `JWT_SECRET`.
-- Restrict `CLIENT_URL` to your specific frontend domain.
+1. Build the frontend first:
+   ```bash
+   cd client && npm run build
+   ```
+2. The server already serves static files from `client/dist`
+3. Deploy to Railway with these env vars:
+   ```
+   PORT=3000
+   JWT_SECRET=your-secret
+   DB_FILENAME=db/data.sqlite
+   NODE_ENV=production
+   ```
 
 ---
 
-## 🛠️ 4. Maintenance
-- **Backups:** Regularly backup your SQL database.
-- **Updates:** Pull the latest changes from the repository and run `npm run migrate` to apply schema updates.
+## Option 3: Docker (VPS/Cloud)
+
+Use the existing `Dockerfile` and `docker-compose.yml`:
+
+```bash
+docker compose up -d
+```
+
+Works on: DigitalOcean, AWS EC2, Google Cloud, Linode, etc.
+
+---
+
+## Environment Variables Reference
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `PORT` | Server port | `3000` |
+| `JWT_SECRET` | Secret for signing tokens | `my-super-secret-key` |
+| `DB_FILENAME` | SQLite database path | `db/data.sqlite` |
+| `CLIENT_URL` | Frontend URL (for CORS) | `https://kutt.vercel.app` |
+| `VITE_API_BASE_URL` | Backend API URL (frontend) | `https://api.kutt.com/api` |
+
+---
+
+## Post-Deployment Checklist
+
+- [ ] Update `CLIENT_URL` in backend to match your frontend domain
+- [ ] Update `VITE_API_BASE_URL` in frontend to match your backend domain
+- [ ] Test signup, login, and link creation
+- [ ] Set up a custom domain (optional)

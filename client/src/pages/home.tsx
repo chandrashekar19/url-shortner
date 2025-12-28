@@ -186,7 +186,7 @@ export default function Home() {
                 </label>
                 <input
                   id="targetUrl"
-                  type="url"
+                  type="text"
                   required
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}

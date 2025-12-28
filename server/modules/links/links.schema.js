@@ -26,7 +26,7 @@ const links = sqliteTable("links", {
  * This ensures the data sent from the UI is clean and safe.
  */
 const LinkCreateSchema = z.object({
-    target: z.string().url("Please provide a valid URL"),
+    target: z.string().min(1, "URL is required"),
     address: z.string().min(1).max(20).optional(),
     description: z.string().max(255).optional(),
     password: z.string().min(6).optional(),

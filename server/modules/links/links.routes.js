@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const controller = require("./links.controller");
 const { LinkCreateSchema } = require("./links.schema");
-const auth = require("../../handlers/auth.handler");
+const auth = require("../../middleware/auth");
 const asyncHandler = require("../../utils/asyncHandler");
 
 const router = Router();
@@ -27,6 +27,7 @@ const validate = (schema) => (req, res, next) => {
 // Create a link
 router.post(
     "/",
+    asyncHandler(auth.jwt),
     validate(LinkCreateSchema),
     asyncHandler(controller.createLink)
 );

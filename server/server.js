@@ -43,14 +43,14 @@ app.use("/api/links", linkRoutes);
 const clientDist = path.join(__dirname, "../client/dist");
 app.use(express.static(clientDist));
 
-// Catch-all for React Routing
+// Catch-all for React Routing (only if API routes didn't match)
 app.get("*", (req, res) => {
   res.sendFile(path.join(clientDist, "index.html"), (err) => {
     if (err) res.status(404).json({ error: "Not found" });
   });
 });
 
-// --- Global Error Handler ---
+// --- Global Error Handler (MUST be last) ---
 app.use(errorHandler);
 
 // --- Boot ---

@@ -25,6 +25,9 @@ exports.getMe = (req, res) => {
         email: req.user.email,
         role: req.user.role,
         verified: req.user.verified,
+        domains: 0,  // TODO: Count user's custom domains
+        links: 0,    // TODO: Count user's links
+        apikey: req.user.apikey || undefined,
     });
 };
 
